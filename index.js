@@ -1,17 +1,10 @@
 const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
 const knex = require('knex');
 const app = express();
-const multer = require('multer');
-const bcrypt = require('bcrypt'); // Import the bcrypt library for password hashing
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
 
-// Import your User model and authentication functions from "auth"
-const { register, login } = require('auth');
-const { count } = require('console');
-const { json } = require('stream/consumers');
+
 
 // Initialize the database connection
 const db = knex({
@@ -28,30 +21,6 @@ const db = knex({
     charset: 'utf8mb4_unicode_ci',
   },
 });
-
-app.use(cors());
-app.use(bodyParser.json());
-
-// Serve static files from the 'public' directory
-app.use(express.static(__dirname + '/public'));
-
-const storage = multer.diskStorage({
-  destination: function (req, file, callback) {
-    callback(null, './public/photos');
-  },
-  filename: function (req, file, callback) {
-    callback(null, Date.now() + '-' + file.originalname);
-  },
-});
-const upload = multer({ storage: storage });
-
-// Handle file uploads
-app.post('/stats', upload.single('file'), function (req, res) {
-  // req.file is the uploaded file, and req.body holds the text fields
-  console.log('Uploaded file:', req.file);
-  console.log('Form data:', req.body);
-});
-
 
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
